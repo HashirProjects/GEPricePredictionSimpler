@@ -1,10 +1,13 @@
 import requests
 import numpy as np
-#import sys
 import pickle
+
+#import sys
 #np.set_printoptions(threshold=sys.maxsize)
+#Above can be uncommented to fully display np arrays
 
 class Updater():
+	"""fetches and processes the market data for 1 item"""
 	headers = {
 		'User-Agent': 'GE price forcasting project. email: hashirrana2001@gmail.com',
 	}
@@ -39,18 +42,19 @@ class Updater():
 				print(f"data at {self.unprocessed['data'][i]['timestamp']} was unsuitable")
 
 
-		self.values = np.array(self.values)#remove none values
-		#self.AvgPrices = np.array(self.AvgPrices)
+		self.values = np.array(self.values)
 
 		self.valuesAggregated = []
+
 		for j in range(len(self.values)-timesteps):
+
 			self.valuesAggregated.append([])
 			for i in range(timesteps):
 				self.valuesAggregated[j].append(self.values[j+i])
-				print(j+i)
 
 		self.values = np.array(self.valuesAggregated)
-		print(np.shape(self.values))
+
+
 		#prevlen = self.values.shape
 		#print(prevlen)
 		#samples = prevlen[0]//timesteps
@@ -65,6 +69,7 @@ class Updater():
 			# nextvalue = self.values[i+1][0]
 			# currentavg = ((currentvalue[0]*currentvalue[2])+(currentvalue[1]*currentvalue[3]))/(currentvalue[2]+currentvalue[3])
 			# nextavg = ((nextvalue[0]*nextvalue[2])+(nextvalue[1]*nextvalue[3]))/(nextvalue[2]+nextvalue[3])
+
 			currentavg = self.values[i][-1][4]
 			nextavg = self.values[i+1][0][4]
 
@@ -73,26 +78,44 @@ class Updater():
 			else:
 				self.labels.append([1,0])
 
-		self.values = self.values / np.amax(self.values)
-		#print(len(self.values))
+		self.values = self.values / np.amax(self.values)#normalise data to increase training speed
 
-		return self.values[:-1], np.array(self.labels)
+		self.values = self.values[:-1] # the last value doesnt have a lalbel since the next avg cant be calculated
 
+		return self.values, np.array(self.labels)
+
+def randomiseInUnison(a,b): 
+    rng_state = np.random.get_state()
+    np.random.shuffle(a)
+    np.random.set_state(rng_state)
+    np.random.shuffle(b)
+    return a, b
+
+def pickleData(data,filename):
+	with open(filename,"wb") as file:
+		pickle.dump(data,file)
 
 if __name__ == "__main__":
 
 	updater= Updater("5m",449)
 	a,b = updater.processData(30)
 
-	# for i in [4151]:
-	# 	updater= Updater("5m",i)
-	# 	tempa,tempb = updater.processData(3)
-	# 	print(np.shape(tempa))
-	# 	a  = np.concatenate((a,tempa))
-	# 	b  = np.concatenate((b,tempb))
+	for i in [4151]: #include all the different item ids you want to save
+		updater= Updater("5m",i)
+		tempa,tempb = updater.processData(30)
+		a  = np.concatenate((a,tempa))
+		b  = np.concatenate((b,tempb))
 
-	c = np.array(list(zip(a,b)))
-	with open("db.txt","wb") as file:
-		pickle.dump(c,file)
+	a,b = randomiseInUnison(a,b)
+
+	pickleData(a,"Data.txt")
+	pickleData(b,"Labels.txt")
+
+
+	#c = np.array(list(zip(a,b)))
+	#print(c)
+
+	#with open("db.txt","wb") as file:
+		#pickle.dump(c,file)
 
 
