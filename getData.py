@@ -95,6 +95,10 @@ def pickleData(data,filename):
 	with open(filename,"wb") as file:
 		pickle.dump(data,file)
 
+def reshapeData(data):
+	prevsize = data.shape
+	return np.reshape(data,[prevsize[0],-1])
+
 if __name__ == "__main__":
 
 	updater= Updater("5m",449)
