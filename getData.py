@@ -36,7 +36,7 @@ class Updater():
 
 				AvgPrice = (self.unprocessed["data"][i]['avgHighPrice']*self.unprocessed["data"][i]['highPriceVolume']+self.unprocessed["data"][i]['avgLowPrice']*self.unprocessed["data"][i]['lowPriceVolume'])/(self.unprocessed["data"][i]['highPriceVolume']+self.unprocessed["data"][i]['lowPriceVolume'])
 
-				self.values.append([self.unprocessed["data"][i]['avgHighPrice'],self.unprocessed["data"][i]['avgLowPrice'],self.unprocessed["data"][i]['highPriceVolume'],self.unprocessed["data"][i]['lowPriceVolume'],AvgPrice])
+				self.values.append(AvgPrice)
 			
 			except TypeError:
 				print(f"data at {self.unprocessed['data'][i]['timestamp']} was unsuitable")
@@ -70,13 +70,13 @@ class Updater():
 			# currentavg = ((currentvalue[0]*currentvalue[2])+(currentvalue[1]*currentvalue[3]))/(currentvalue[2]+currentvalue[3])
 			# nextavg = ((nextvalue[0]*nextvalue[2])+(nextvalue[1]*nextvalue[3]))/(nextvalue[2]+nextvalue[3])
 
-			currentavg = self.values[i][-1][4]
-			nextavg = self.values[i+1][0][4]
+			currentavg = self.values[i][-1]
+			nextavg = self.values[i+1][-1]
 
 			if nextavg > currentavg:
-				self.labels.append([0,1])
+				self.labels.append(1)
 			else:
-				self.labels.append([1,0])
+				self.labels.append(0)
 
 		self.values = self.values / np.amax(self.values)#normalise data to increase training speed
 
@@ -110,10 +110,11 @@ if __name__ == "__main__":
 		a  = np.concatenate((a,tempa))
 		b  = np.concatenate((b,tempb))
 
+	print(a,b)
 	a,b = randomiseInUnison(a,b)
 
-	pickleData(a,"Data.txt")
-	pickleData(b,"Labels.txt")
+	#pickleData(a,"Data.txt")
+	#pickleData(b,"Labels.txt")
 
 
 	#c = np.array(list(zip(a,b)))
