@@ -22,7 +22,7 @@ class Updater():
 	def getUnprocessed(self):
 		return self.unprocessed
 
-	def processData(self,timesteps):
+	def processData(self,timesteps):#perhaps should save only avgprices? simplify: make labels binary and pass in only avg prices
 
 		self.values = []
 		self.labels = []
