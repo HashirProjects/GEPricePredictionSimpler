@@ -55,20 +55,8 @@ class Updater():
 		self.values = np.array(self.valuesAggregated)
 
 
-		#prevlen = self.values.shape
-		#print(prevlen)
-		#samples = prevlen[0]//timesteps
-		#self.values = np.resize(self.values,(samples,timesteps,prevlen[1]))
-		#self.AvgPrices = np.resize(self.values,(samples,timesteps,1))
-
-		#print(self.AvgPrices)
-
 		for i in range(len(self.values)-1):
 
-			# currentvalue = self.values[i][-1]
-			# nextvalue = self.values[i+1][0]
-			# currentavg = ((currentvalue[0]*currentvalue[2])+(currentvalue[1]*currentvalue[3]))/(currentvalue[2]+currentvalue[3])
-			# nextavg = ((nextvalue[0]*nextvalue[2])+(nextvalue[1]*nextvalue[3]))/(nextvalue[2]+nextvalue[3])
 
 			currentavg = self.values[i][-1]
 			nextavg = self.values[i+1][-1]
@@ -101,10 +89,10 @@ def reshapeData(data):
 
 if __name__ == "__main__":
 
-	updater= Updater("5m",449)
+	updater= Updater("24h",1185)
 	a,b = updater.processData(30)
 
-	for i in [4151]: #include all the different item ids you want to save
+	for i in [1201]: #include all the different item ids you want to save
 		updater= Updater("5m",i)
 		tempa,tempb = updater.processData(30)
 		a  = np.concatenate((a,tempa))

@@ -1,7 +1,7 @@
 import getData
 from tensorflow import keras
 
-class predictor():
+class Predictor():
 
 	def __init__(self,interval,timesteps):
 		self.timesteps = timesteps
@@ -12,8 +12,17 @@ class predictor():
 		self.model = keras.models.load_model(name)
 		return self.model
 
-	def predict(self,iden):
-		updater= getData.Updater(interval,iden[0])
-		data,_ = updater.processData(timesteps)
-		data = getData.reshapeData(data)
-		return self.model(data[-1])
+	def predict(self,iden):#best to make an array of last data points and pass them into the model at the same time
+		updater= getData.Updater(self.interval,iden)
+		self.data,_ = updater.processData(self.timesteps)
+		return self.model(self.data)[-1]
+
+	def plotfinal(self):
+		import matplotlib.pyplot as plt
+		plt.plot(self.data[-1])
+		plt.show()
+
+predictor = Predictor('24h',30)
+predictor.getmodel(2,32)
+print(predictor.predict(4151))
+predictor.plotfinal()
