@@ -15,14 +15,18 @@ class Predictor():
 	def predict(self,iden):#best to make an array of last data points and pass them into the model at the same time
 		updater= getData.Updater(self.interval,iden)
 		self.data,_ = updater.processData(self.timesteps)
-		return self.model(self.data)[-1]
+		self.results = self.model(self.data)
+		return self.results
 
 	def plotfinal(self):
 		import matplotlib.pyplot as plt
-		plt.plot(self.data[-1])
-		plt.show()
+		for i in range(len(self.data)):
+			print(self.results[i])			
+			plt.plot(self.data[i])
+			plt.show()
 
-predictor = Predictor('24h',30)
-predictor.getmodel(2,32)
-print(predictor.predict(4151))
-predictor.plotfinal()
+if __name__ == "__main__":
+	predictor = Predictor('24h',7)
+	predictor.getmodel(3,32)
+	predictor.predict(4151)
+	predictor.plotfinal()
