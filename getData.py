@@ -22,8 +22,7 @@ class Updater():
 	def getUnprocessed(self):
 		return self.unprocessed
 
-	def processData(self,timesteps):#perhaps should save only avgprices? simplify: make labels binary and pass in only avg prices
-
+	def calcAvgValues(self,timesteps):
 		self.values = []
 		self.labels = []
 		#self.AvgPrices = []
@@ -35,7 +34,7 @@ class Updater():
 					raise(TypeError) 
 
 				AvgPrice = (self.unprocessed["data"][i]['avgHighPrice']*self.unprocessed["data"][i]['highPriceVolume']+self.unprocessed["data"][i]['avgLowPrice']*self.unprocessed["data"][i]['lowPriceVolume'])/(self.unprocessed["data"][i]['highPriceVolume']+self.unprocessed["data"][i]['lowPriceVolume'])
-
+				print(AvgPrice)
 				self.values.append(AvgPrice)
 			
 			except TypeError:
@@ -54,6 +53,15 @@ class Updater():
 
 		self.values = np.array(self.valuesAggregated)
 
+		self.values = self.values / np.amax(self.values)#normalise data to increase training speed
+
+		return self.values
+
+
+	def processData(self,timesteps):#perhaps should save only avgprices? simplify: make labels binary and pass in only avg prices
+
+		self.calcAvgValues(timesteps)
+
 
 		for i in range(len(self.values)-1):
 
@@ -66,9 +74,8 @@ class Updater():
 			else:
 				self.labels.append(0)
 
-		self.values = self.values / np.amax(self.values)#normalise data to increase training speed
 
-		self.values = self.values[:-1] # the last value doesnt have a lalbel since the next avg cant be calculated
+		self.values = self.values[:-1] # the last value doesnt have a label since the next avg cant be calculated
 
 		return self.values, np.array(self.labels)
 
